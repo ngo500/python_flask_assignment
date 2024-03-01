@@ -40,8 +40,34 @@ def add_transaction():
     #else- GET request
     return render_template("form.html")
 
+@app.route('edit/<int:transction_id>', methods=['GET', 'POST'])
+def edit_transaction(transction_id):
+    """
+    GET or POST method to view or update transactions
+    returns:
+    POST request:
+    else, GET request:
+    """
+    if request.method == 'POST':
+        #transaction info to update to
+        date = request.form['date']
+        amount = float(request.form['amount'])
+        #look for the transaction id in the transactions list
+        for tr in transactions:
+            #if the id matches, update the info, and break
+            if tr['id'] == transction_id:
+                tr['date'] = date
+                tr['amount'] = amount
+                break
+        #redirect to transactions page
+        return redirect(url_for("get_transactions"))
 
-# Update operation
+    #else- GET request, render the edit.html page if id is known
+    for tr in transactions:
+        #if the id matches,
+        if tr['id'] == transaction_id:
+            return render_template("edit.html", transaction = tr)
+
 
 # Delete operation
 
