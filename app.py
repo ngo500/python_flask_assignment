@@ -17,10 +17,10 @@ def get_transactions():
     """
     return render_template("transactions.html", transactions = transactions)
 
-@app.route('/add', methods['GET', 'POST'])
+@app.route('/add', methods=['GET', 'POST'])
 def add_transaction():
     """
-    GET or POST method to add new transactions
+    GET or POST method to view and add new transactions
     returns:
     POST request: creates a new transaction, adds it to the list, and redirects to transactions page
     else, GET request: renders the form.html page
@@ -37,11 +37,11 @@ def add_transaction():
         #redirect to transactions page
         return redirect(url_for("get_transactions"))
 
-    #else- GET request
+    #else- GET request, render the form.html page
     return render_template("form.html")
 
-@app.route('edit/<int:transction_id>', methods=['GET', 'POST'])
-def edit_transaction(transction_id):
+@app.route('/edit/<int:transaction_id>', methods=['GET', 'POST'])
+def edit_transaction(transaction_id):
     """
     GET or POST method to view or update transactions
     returns:
@@ -55,7 +55,7 @@ def edit_transaction(transction_id):
         #look for the transaction id in the transactions list
         for tr in transactions:
             #if the id matches, update the info, and break
-            if tr['id'] == transction_id:
+            if tr['id'] == transaction_id:
                 tr['date'] = date
                 tr['amount'] = amount
                 break
@@ -69,7 +69,7 @@ def edit_transaction(transction_id):
             return render_template("edit.html", transaction = tr)
 
 @app.route('/delete/<int:transaction_id>', methods=['GET'])
-def delete_transaction(transactoin_id):
+def delete_transaction(transaction_id):
     #look for the transaction id in the transactions list
     for tr in transactions:
         #if the id matches, delete the transaction, and break
@@ -79,5 +79,23 @@ def delete_transaction(transactoin_id):
     #redirect to the transactions page
     return redirect(url_for("get_transactions"))
 
-# Run the Flask app
-    
+@app.errorhandler(404)
+def api_not_found(error):
+    """
+    Error handler for 404 errors, return error message
+    Returns:
+    404: always, error message for API not found
+    """
+    return {"message" : "Error- API not found!"}, 404
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    """
+    Error handler for 500 errors, return error message
+    Returns:
+    500: always, error message for internal server error
+    """
+    return {"message" : "Error- Internval server error!"}, 500
+
+if __name__ == "__main__":
+    app.run(debug = True)
