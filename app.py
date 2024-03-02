@@ -3,9 +3,9 @@ app = Flask(__name__)
 
 # Sample data
 transactions = [
-    {'id': 1, 'date': '2023-06-01', 'amount': 100},
-    {'id': 2, 'date': '2023-06-02', 'amount': -200},
-    {'id': 3, 'date': '2023-06-03', 'amount': 300}
+    {'id': 1, 'date': '2023-06-01', 'amount': 100.0},
+    {'id': 2, 'date': '2023-06-02', 'amount': -200.0},
+    {'id': 3, 'date': '2023-06-03', 'amount': 300.0}
 ]
 
 @app.route('/', methods=['GET'])
@@ -45,8 +45,8 @@ def edit_transaction(transaction_id):
     """
     GET or POST method to view or update transactions
     returns:
-    POST request:
-    else, GET request:
+    POST request: looks for transaction, if found updates with new info, and redirects to transactions page
+    else, GET request: render the edit.html page if id is known
     """
     if request.method == 'POST':
         #transaction info to update to
@@ -70,6 +70,11 @@ def edit_transaction(transaction_id):
 
 @app.route('/delete/<int:transaction_id>', methods=['GET'])
 def delete_transaction(transaction_id):
+    """
+    GET method to delete a transaction
+    returns:
+    GET request: if matching id is found, deletes transaction, then redirects to transaction page
+    """
     #look for the transaction id in the transactions list
     for tr in transactions:
         #if the id matches, delete the transaction, and break
@@ -78,6 +83,35 @@ def delete_transaction(transaction_id):
             break
     #redirect to the transactions page
     return redirect(url_for("get_transactions"))
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_transactions():
+    """
+    GET or POST method to search transactions
+    returns:
+    POST request: retrieves float values from user form input, searches for transactions,
+        and render the filtered transactions
+    else, GET request: renders the search.html page
+    """
+    if request.method == 'POST':
+        #transaction range to filter for
+        min = float(request.form['min_amount'])
+        max = float(request.form['max_amount'])
+
+        #empty list
+        filtered_transactions = []
+
+        #look for the transactions within given amount range
+        for tr in transactions:
+            #if the transaction fits the specifications, add it to the list
+            if min <= tr['amount'] <= max:
+                filtered_transactions.append(tr)
+
+        #render the transaction page with only the matching transactions
+        return render_template("transactions.html", transactions = filtered_transactions)
+
+    #else- GET request, render the search.html page
+    return render_template("search.html")
 
 @app.errorhandler(404)
 def api_not_found(error):
