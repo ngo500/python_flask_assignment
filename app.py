@@ -113,6 +113,21 @@ def search_transactions():
     #else- GET request, render the search.html page
     return render_template("search.html")
 
+@app.route('/balance', methods=['GET'])
+def total_balance():
+    """
+    GET method to view total balance of all transactions
+    returns:
+    GET method: always returns render of tranactions page with total balance at the bottom
+    """
+    #starting amount is 0
+    balance = 0
+    #loop through all the transactions in the  transactions list
+    for tr in transactions:
+        balance += tr['amount']
+
+    return "Total Balance: {}".format(float(balance))
+
 @app.errorhandler(404)
 def api_not_found(error):
     """
