@@ -15,7 +15,14 @@ def get_transactions():
     returns:
     always renders the transactions.html page
     """
-    return render_template("transactions.html", transactions = transactions)
+    #starting amount is 0
+    balance = 0
+    #loop through all the transactions in the  transactions list
+    for tr in transactions:
+        balance += tr['amount']
+
+    return render_template("transactions.html", transactions = transactions, balance = balance)
+
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_transaction():
@@ -126,7 +133,7 @@ def total_balance():
     for tr in transactions:
         balance += tr['amount']
 
-    return "Total Balance: {}".format(float(balance))
+    return render_template("transactions.html", transactions = transactions, balance = balance)
 
 @app.errorhandler(404)
 def api_not_found(error):
